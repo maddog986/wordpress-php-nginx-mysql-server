@@ -8,6 +8,17 @@ This will setup a [MariaDB](https://mariadb.com/) (MySQL) database, [WordPress](
 
 See the .env.sample file for all environment variables. This is where you can make your WordPress install changes. You should not have to edit the docker-compose.yml file.
 
+## Notes
+
+Site backup import:
+    You can specify a URL to download a site backup and have it imported upon first container boot by specifying BACKUP_SITE_DOWNLOAD varaible and optional (recommended) http auth password BACKUP_PASSWORD.
+
+    When the site is downloaded, you can include extra nginx conf files to be excuted. example: for custom redirects, so you dont have to import wp-content/uploads
+
+    Notes about the site download:
+    - *.conf files within the root www folder will automatically be included in ngnix default.conf. These files can extend the site settings.
+    - *.sql files within the root are executed after mysql database setup upon container first boot only. These files are used to restore a database to the server and are deleted once imported.
+
 ## License
 
 The MIT License (MIT)
