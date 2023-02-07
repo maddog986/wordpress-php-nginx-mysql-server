@@ -1,0 +1,8 @@
+{
+    "name": "docker-php-nginx-mysql-server",
+    "version": "1.0.5",
+    "description": "Remote container development for WordPress",
+    "author": "Drew Gauderman <drew@dpg.host>",
+    "scripts": {},
+    "dependencies": {}
+}

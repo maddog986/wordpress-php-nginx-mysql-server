@@ -1,0 +1,79 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mariadb:latest
+    volumes:
+      - mysql:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+
+  # wordpress:
+  #   container_name: wordpress
+  #   depends_on:
+  #     - mysql
+  #   links:
+  #     - mysql
+  #   image: "wordpress:php${VARIANT}-fpm"
+  #   volumes:
+  #     - ./public:/var/www/html
+  #   restart: always
+  #   # ports:
+  #   #   - 9000:9000
+  #   environment:
+  #     - WORDPRESS_DB_HOST=mysql
+  #     - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+  #     - WORDPRESS_DB_USER=${MYSQL_USER}
+  #     - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+  #     - WORDPRESS_TABLE_PREFIX
+
+  wordpress:
+    image: dpghost/wordpress
+    build: .
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - ./public:/var/www/html
+    restart: always
+    environment:
+      - NODE_VERSION
+      - DEV_PORT
+      - WORDPRESS_DB_HOST=mysql
+      - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+      - WORDPRESS_DB_USER=${MYSQL_USER}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+      - WORDPRESS_TABLE_PREFIX
+      - DEV_URL
+      - WORDPRESS_TITLE
+      - WORDPRESS_ADMIN_USERNAME
+      - WORDPRESS_ADMIN_PASSWORD
+      - WORDPRESS_ADMIN_EMAIL
+      - BACKUP_USERNAME
+      - BACKUP_PASSWORD
+      - BACKUP_SITE_DOWNLOAD
+      - BACKUP_EXCLUDE
+
+  nginx:
+    depends_on:
+      - mysql
+      - wordpress
+    links:
+      - wordpress
+    image: nginx:alpine
+    volumes:
+      - ./public:/var/www/html
+      - ./nginx.default.conf:/etc/nginx/conf.d/default.conf
+    restart: always
+    environment:
+      - DEV_PORT
+    ports:
+      - ${DEV_PORT}:80
+
+volumes:
+  mysql:
